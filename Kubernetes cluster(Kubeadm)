@@ -1,0 +1,56 @@
+Command for Creating cluster by using Kubeadm
+Kubernetes master command 
+
+ 1  # using 'sudo su' is not a good practice.
+    2  sudo apt update
+    3  sudo apt-get install -y apt-transport-https ca-certificates curl
+    4  sudo apt install docker.io -y
+    5  sudo systemctl enable --now docker # enable and start in single command.
+    6  # Adding GPG keys.
+    7  curl -fsSL "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg
+    8  # Add the repository to the sourcelist.
+    9  echo 'deb https://packages.cloud.google.com/apt kubernetes-xenial main' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+   10  sudo apt update
+   11  sudo apt install kubeadm=1.20.0-00 kubectl=1.20.0-00 kubelet=1.20.0-00 -y
+   12  sudo kubeadm init
+   13  Set up local kubeconfig (both for root user and normal user):
+   14  mkdir -p $HOME/.kube
+   15  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+   16  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+   17  kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+   18  sudo kubeadm token create --print-join-command
+   19  kubectl get node
+   20  kubectl get node -o wide
+   21  kubectl create namespace argocd
+   22  kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+   23  kubectl get all -n argocd
+   24  kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort"}}'
+   25  kubectl get all -n argocd
+   26  curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+   27  sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+   28  rm argocd-linux-amd64
+   29  kubectl get node -o wide
+   30  argocd admin initial-password -n argocd
+   31  argocd login 18.61.75.155:32275
+   32  argocd account update-password
+   33  kubectl config get-contexts -o name
+   34  argocd cluster add kubernetes-admin@kubernetes
+   35  argocd cluster list
+   36  kubectl get all
+   37  history
+
+Kubernetes worker command
+
+  1  # using 'sudo su' is not a good practice.
+    2  sudo apt update
+    3  sudo apt-get install -y apt-transport-https ca-certificates curl
+    4  sudo apt install docker.io -y
+    5  sudo systemctl enable --now docker # enable and start in single command.
+    6  # Adding GPG keys.
+    7  curl -fsSL "https://packages.cloud.google.com/apt/doc/apt-key.gpg" | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/kubernetes-archive-keyring.gpg
+    8  # Add the repository to the sourcelist.
+    9  echo 'deb https://packages.cloud.google.com/apt kubernetes-xenial main' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+   10  sudo apt update
+   11  sudo apt install kubeadm=1.20.0-00 kubectl=1.20.0-00 kubelet=1.20.0-00 -y
+   12  sudo kubeadm join 172.31.21.11:6443 --token jqlzuv.jkcmemadou8gptnc     --discovery-token-ca-cert-hash sha256:c57d6df3efb83b240e95a457668bdd669d56932118b6783ecc1aa4955df12f93 --v=5
+   13  history
