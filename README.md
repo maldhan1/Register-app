@@ -118,8 +118,12 @@ $ sudo vim /etc/systemd/system/sonar.service
 
 ## Watch log files and monitor for startup
      $ sudo tail -f /opt/sonarqube/logs/sonar.log
+     Kubernetes master command 
+     ============================================================= Setup kubernetes cluster from Kubeadm =============================================================
+Optional(EKS is very expensive so you can use this for optional - https://github.com/maldhan1/Register-app/blob/main/Kubernetes%20cluster(Kubeadm))
 
 ============================================================= Setup Bootstrap Server for eksctl and Setup Kubernetes using eksctl =============================================================
+
 ## Install AWS Cli on the above EC2
 Refer--https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
 $ sudo su
